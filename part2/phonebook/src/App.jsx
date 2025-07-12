@@ -52,7 +52,7 @@ const App = () => {
       value = {newFilter}
       onChange = {handleFilterChange}
       />
-      <h2>Add new person</h2>
+      <h3>Add new person</h3>
       <Add 
       nameValue = {newName}
       nameChange = {handleNameChange}
@@ -60,7 +60,7 @@ const App = () => {
       numberChange = {handleNumberChange}
       action = {addPerson}
       />
-      <h2>Numbers</h2>
+      <h3>Numbers</h3>
       <Display
       persons={personsToShow}
       />
