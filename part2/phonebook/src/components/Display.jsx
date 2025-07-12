@@ -1,15 +1,14 @@
-const Display = ({persons}) => {
+import Person from './Person'
+
+const Display = ({persons, handleDelete}) => {
   return(
-    <table>
-      <tbody>
-          {persons.map(person =>
-            <tr key = {person.name}>
-              <td>{person.name}</td>
-              <td>{person.number}</td>
-            </tr>
-          )}
-      </tbody>
-    </table>
+    <div>
+      {persons.map(person =>
+        <div key = {person.id}>
+          <Person personName={person.name} personNumber={person.number} removing={() => handleDelete(person.id, person.name)}/>
+        </div>
+      )}
+    </div>
   )
 }
 
