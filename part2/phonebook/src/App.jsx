@@ -3,13 +3,39 @@ import Filter from './components/Filter'
 import Add from './components/Add'
 import Display from './components/Display'
 import personService from './services/persons'
+import './index.css'
 
+const SuccessNotification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="success">
+      {message}
+    </div>
+  )
+}
+
+const ErrorNotification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -36,6 +62,18 @@ const App = () => {
               setNewName('')
               setNewNumber('')
             })
+            .catch(error => {
+              setErrorMessage(
+                `${found.name} already deleted`
+              )
+              setTimeout(() => {
+                setErrorMessage(null)
+              }, 5000)
+              personService.getAll().then(allPersons => setPersons(allPersons))
+            })
+            setNewName('')
+            setNewNumber('')
+            return
       } else {
         setNewName('')
         setNewNumber('')
@@ -52,6 +90,12 @@ const App = () => {
           setPersons(persons.concat(createdPerson))
           setNewName('')
           setNewNumber('')
+          setSuccessMessage(
+          `${createdPerson.name} was added successfully`
+        )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
   }
 
@@ -61,7 +105,19 @@ const App = () => {
         .remove(id)
           .then(response =>
             setPersons(persons.filter(person => person.id !== id))
-          );
+          )
+          .catch(error => {
+              setErrorMessage(
+                `${name} already deleted`
+              )
+              setTimeout(() => {
+                setErrorMessage(null)
+              }, 5000)
+              personService.getAll().then(allPersons => setPersons(allPersons))
+            })
+            setNewName('')
+            setNewNumber('')
+            return
     } else {
       return
     }
@@ -85,6 +141,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <ErrorNotification message={errorMessage} />
+      <SuccessNotification message={successMessage} />
       <Filter
       value = {newFilter}
       onChange = {handleFilterChange}
