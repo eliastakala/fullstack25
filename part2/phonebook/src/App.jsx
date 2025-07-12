@@ -1,19 +1,7 @@
 import { useState } from 'react'
-
-const Display = ({persons}) => {
-  return(
-    <table>
-      <tbody>
-          {persons.map(person =>
-            <tr key = {person.name}>
-              <td>{person.name}</td>
-              <td>{person.number}</td>
-            </tr>
-          )}
-      </tbody>
-    </table>
-  )
-}
+import Filter from './components/Filter'
+import Add from './components/Add'
+import Display from './components/Display'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -60,34 +48,22 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form>
-        <div>
-          filter shown with <input 
-            value = {newFilter}
-            onChange = {handleFilterChange}
-            />
-        </div>
-      </form>
+      <Filter
+      value = {newFilter}
+      onChange = {handleFilterChange}
+      />
       <h2>Add new person</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input 
-            value = {newName}
-            onChange = {handleNameChange}
-          />
-        </div>
-        <div>
-          number: <input 
-            value = {newNumber}
-            onChange = {handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Add 
+      nameValue = {newName}
+      nameChange = {handleNameChange}
+      numberValue = {newNumber}
+      numberChange = {handleNumberChange}
+      action = {addPerson}
+      />
       <h2>Numbers</h2>
-      <Display persons={personsToShow} />
+      <Display
+      persons={personsToShow}
+      />
     </div>
   )
 
