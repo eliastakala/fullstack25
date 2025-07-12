@@ -2,32 +2,9 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Add from './components/Add'
 import Display from './components/Display'
+import { SuccessNotification, ErrorNotification } from './components/Notification'
 import personService from './services/persons'
 import './index.css'
-
-const SuccessNotification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className="success">
-      {message}
-    </div>
-  )
-}
-
-const ErrorNotification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className="error">
-      {message}
-    </div>
-  )
-}
 
 const App = () => {
   const [persons, setPersons] = useState([])
