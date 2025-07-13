@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import axios from 'axios'
+import countriesService from "./services/countries"
+import weatherService from "./services/weather"
 
 const Filter = ({value, onChange}) => {
   return(
@@ -26,9 +27,19 @@ const LanguageList = ({languages}) => {
   )
 }
 
+const DisplayWeather = ({data}) => {
+  if (data) {
+    return (
+      <div>
+        <p>Temperature {data.main.temp} Celsius</p>
+        <img src = {" https://openweathermap.org/img/wn/"+data.weather[0].icon+"@2x.png"}/>
+        <p>Temperature {data.wind.speed} m/s</p>
+      </div>
+    )
+  }
+}
+
 const DisplayCountry = ({country}) => {
-  console.log('country', country)
-  console.log('lan', country.languages)
   
   return (
     <div>
@@ -37,12 +48,13 @@ const DisplayCountry = ({country}) => {
       <p>Area {country.area}</p>
       <h3>Languages</h3>
       <LanguageList languages = {country.languages} />
-      <img src={country.flags.png} alt='Flag' width={200} height={200}/>
+      <img src={country.flags.png} alt='Flag' height={200}/>
+      <h3>Weather in {country.capital}</h3>
     </div>
   )
 }
 
-const DisplayCountries = ({countries}) => {
+const DisplayCountries = ({countries, handleShow, handleWeather}) => {
   if (countries.length >= 10) {
     return (
       <div>
@@ -53,14 +65,17 @@ const DisplayCountries = ({countries}) => {
   if (countries.length === 1) {
     return(
       <div>
-        <DisplayCountry country={countries[0]} />
+        <DisplayCountry country={countries[0]} handleWeather={handleWeather} />
       </div>
     )
   }
   return(
     <div>
       {countries.map(country => 
-        <div key = {country.name.common}> {country.name.common} </div>
+        <div key = {country.name.common}>
+          {country.name.common}
+          <button onClick={() => handleShow(country.name.common)}>Show</button>
+         </div>
       )}
     </div> 
   )
@@ -69,27 +84,72 @@ const DisplayCountries = ({countries}) => {
 const App = () => {
   const [newFilter, setNewFilter] = useState("")
   const [countries, setCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState(null)
+  const [fetchedCountryData, setFetchedCountryData] = useState(null);
+  const [weather, setWeather] = useState(null)
 
   useEffect(() => {
-    axios
-      .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
-      .then(response => {
-        const countryData = response.data.map((country) => country);
-        setCountries(countryData)
-      })
+    countriesService
+      .getAll()
+        .then(initialCountries => {
+          setCountries(initialCountries)
+        })
     }, [])
-  
-  const countriesToShow = countries.filter((el) => 
-  el.name.common.toLowerCase().includes(newFilter.toLowerCase()))
+
+  useEffect(() => {
+    if (selectedCountry) {
+      countriesService
+        .getDistinct(selectedCountry)
+          .then(fetchedCountry => {
+            setFetchedCountryData(fetchedCountry)
+    })
+    }
+  }, [selectedCountry])
+
+  useEffect(() => {
+    let weatherCountry = null;
+    if (selectedCountry) {
+      weatherCountry = countries.find(
+        (c) => c.name.common === selectedCountry)
+    } else {
+      const filtered = countries.filter((el) => 
+        el.name.common.toLowerCase().includes(newFilter.toLowerCase()))
+      if (filtered.length === 1) {
+        weatherCountry = filtered[0]
+      }
+    }
+    if (weatherCountry) {
+      const [lat, lng] = weatherCountry.latlng;
+      weatherService.getWeather(lat,lng).then((weatherData) => {
+        setWeather(weatherData)
+      })
+    }
+  }, [newFilter, selectedCountry, countries])
+
+  const countriesToShow = fetchedCountryData
+    ? [fetchedCountryData]
+    : countries.filter((el) => 
+        el.name.common.toLowerCase().includes(newFilter.toLowerCase())
+      )
 
   const handleFilterChange = (event) => {
     setNewFilter(event.target.value)
+    setSelectedCountry(null)
+    setFetchedCountryData(null)
+    setWeather(null)
   }
+
+  const handleShow = (nameToShow) => {
+    setSelectedCountry(nameToShow)
+  }
+
+  
 
   return (
     <div>
       <Filter value={newFilter} onChange={handleFilterChange} />
-      <DisplayCountries countries={countriesToShow} />
+      <DisplayCountries countries={countriesToShow} handleShow={handleShow} />
+      <DisplayWeather data = {weather} />
     </div>
   )
 }
