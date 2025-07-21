@@ -6,7 +6,7 @@ app.use(express.json())
 const morgan = require('morgan')
 morgan.token('content', function (req, res) { return  JSON.stringify(req.body)});
 // app.use(morgan(':method :url :status :res[content-length] :response-time ms :content'))
-app.use(morgan(':method :url :status :res[content-length] :response-time ms :content', {
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content', {
     skip: function(req, res) { return req.method !== "POST" }
 }))
 
