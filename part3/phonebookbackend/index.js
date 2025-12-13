@@ -83,6 +83,7 @@ app.post('/api/persons', (request, response) => {
     })
     contact.save().then(result => {
         console.log(`added ${body.name} number ${body.number} to phonebook`)
+        response.json(result)
     })
 })
 
