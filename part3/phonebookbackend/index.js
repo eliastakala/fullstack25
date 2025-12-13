@@ -1,48 +1,17 @@
+require('dotenv').config()
 const express = require('express')
+const Contact = require('./models/contact')
 const app = express()
-
 app.use(express.json())
-
 app.use(express.static('dist'))
-
 const morgan = require('morgan')
 morgan.token('content', function (req, res) { return  JSON.stringify(req.body)});
-
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content', {
     skip: function(req, res) { return req.method !== "POST" }
 }))
-
 app.use(morgan('tiny', {
     skip: function(req, res) { return req.method === "POST" }
 }))
-
-let persons = [
-    {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": "1"
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": "2"
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": "3"
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": "4"
-    },
-    {
-      "name": "Remi Lindholm",
-      "number": "040 660 5281",
-      "id": "5"
-    }
-  ]
 
 app.get('/info', (request, response) => {
     response.send(
@@ -56,10 +25,15 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Contact.find({}).then(persons => {
+      response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {    
+    // Contact.findById(request.params.id).then(contact => {
+    //   response.json(contact)
+    // })
     const id = request.params.id
     const person = persons.find(person => person.id === id)
 
@@ -77,10 +51,10 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
-const generateId = () => {
-    const newId = Math.round(Math.random() * 1000000)
-    return newId
-}
+// const generateId = () => {
+//     const newId = Math.round(Math.random() * 1000000)
+//     return newId
+// }
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -97,20 +71,19 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    if (persons.find(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'name must be unique'
-        })
-    }
-
-    const person = {
+    // if (persons.find(person => person.name === body.name)) {
+    //     return response.status(400).json({
+    //         error: 'name must be unique'
+    //     })
+    // }
+    const contact = new Contact({
         name: body.name,
         number: body.number,
-        id: generateId(),
-    }
-
-    persons = persons.concat(person)
-    response.json(person)
+        // id: generateId()
+    })
+    contact.save().then(result => {
+        console.log(`added ${body.name} number ${body.number} to phonebook`)
+    })
 })
 
 
