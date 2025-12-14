@@ -31,17 +31,18 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {    
-    // Contact.findById(request.params.id).then(contact => {
-    //   response.json(contact)
-    // })
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  Contact.findById(request.params.id)
+    .then(contact => {
+      if (contact) {
+        response.json(contact)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
