@@ -25,10 +25,13 @@ app.use(morgan('tiny', {
 }))
 
 app.get('/info', (request, response) => {
+  Contact.countDocuments({}).then(result => {
     response.send(
-        `<p>Phonebook has info for ${persons.length} people</p>
+        `<p>Phonebook has info for ${result} people</p>
         <p>${new Date().toString()}</p>`
-)
+    )
+  })
+  .catch((error) => next(error))
 })
 
 app.get('/', (request, response) => {
@@ -39,6 +42,7 @@ app.get('/api/persons', (request, response) => {
     Contact.find({}).then(persons => {
       response.json(persons)
     })
+    .catch((error) => next(error))
 })
 
 app.get('/api/persons/:id', (request, response, next) => {    
