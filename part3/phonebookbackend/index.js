@@ -18,36 +18,36 @@ app.use(express.json())
 app.use(express.static('dist'))
 
 const morgan = require('morgan')
-morgan.token('content', function (req, res) { return  JSON.stringify(req.body)});
+morgan.token('content', function (req) { return  JSON.stringify(req.body)})
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content', {
-    skip: function(req, res) { return req.method !== "POST" }
+  skip: function(req) { return req.method !== 'POST' }
 }))
 app.use(morgan('tiny', {
-    skip: function(req, res) { return req.method === "POST" }
+  skip: function(req) { return req.method === 'POST'}
 }))
 
 app.get('/info', (request, response) => {
   Contact.countDocuments({}).then(result => {
     response.send(
-        `<p>Phonebook has info for ${result} people</p>
-        <p>${new Date().toString()}</p>`
+      `<p>Phonebook has info for ${result} people</p>
+      <p>${new Date().toString()}</p>`
     )
   })
-  .catch((error) => next(error))
-})
-
-app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
-})
-
-app.get('/api/persons', (request, response) => {
-    Contact.find({}).then(persons => {
-      response.json(persons)
-    })
     .catch((error) => next(error))
 })
 
-app.get('/api/persons/:id', (request, response, next) => {    
+app.get('/', (request, response) => {
+  response.send('<h1>Hello World!</h1>')
+})
+
+app.get('/api/persons', (request, response) => {
+  Contact.find({}).then(persons => {
+    response.json(persons)
+  })
+    .catch((error) => next(error))
+})
+
+app.get('/api/persons/:id', (request, response, next) => {
   Contact.findById(request.params.id)
     .then(contact => {
       if (contact) {
@@ -61,24 +61,25 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response) => {
   Contact.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch((error) => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
-    const body = request.body
+  const body = request.body
 
-    const contact = new Contact({
-            name: body.name,
-            number: body.number,
-        })
-        contact.save().then(result => {
-            console.log(`added ${body.name} number ${body.number} to phonebook`)
-            response.json(result)
-          })
-          .catch(error => next(error))
+  const contact = new Contact({
+    name: body.name,
+    number: body.number,
+  })
+  contact.save()
+    .then(() => {
+      console.log(`added ${body.name} number ${body.number} to phonebook`)
+      response.json(contact)
+    })
+    .catch((error) => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
