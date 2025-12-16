@@ -70,22 +70,9 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
 
-    // if (!body.name) {
-    //     return response.status(400).json({ 
-    //         error: 'name missing' 
-    //     })
-    // }
-
-    // if (!body.number) {
-    //     return response.status(400).json({ 
-    //         error: 'number missing' 
-    //     })
-    // }
-
     const contact = new Contact({
             name: body.name,
             number: body.number,
-            // id: generateId()
         })
         contact.save().then(result => {
             console.log(`added ${body.name} number ${body.number} to phonebook`)
