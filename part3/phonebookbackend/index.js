@@ -26,7 +26,7 @@ app.use(morgan('tiny', {
   skip: function(req) { return req.method === 'POST'}
 }))
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
   Contact.countDocuments({}).then(result => {
     response.send(
       `<p>Phonebook has info for ${result} people</p>
@@ -40,10 +40,9 @@ app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
-app.get('/api/persons', (request, response) => {
-  Contact.find({}).then(persons => {
-    response.json(persons)
-  })
+app.get('/api/persons', (request, response, next) => {
+  Contact.find({})
+    .then(persons => response.json(persons))
     .catch((error) => next(error))
 })
 
@@ -59,7 +58,7 @@ app.get('/api/persons/:id', (request, response, next) => {
     .catch((error) => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Contact.findByIdAndDelete(request.params.id)
     .then(() => {
       response.status(204).end()
@@ -76,7 +75,6 @@ app.post('/api/persons', (request, response, next) => {
   })
   contact.save()
     .then(() => {
-      console.log(`added ${body.name} number ${body.number} to phonebook`)
       response.json(contact)
     })
     .catch((error) => next(error))
