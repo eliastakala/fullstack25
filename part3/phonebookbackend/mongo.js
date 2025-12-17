@@ -18,15 +18,15 @@ mongoose.set('strictQuery', false)
 mongoose.connect(url, { family: 4 })
 
 const contactSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        minLength: 3,
-        required: true
-    },
-    number: {
-        type: String,
-        required: true
-    },
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    required: true
+  },
 })
 
 const Contact = mongoose.model('Contact', contactSchema)
