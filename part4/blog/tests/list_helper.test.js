@@ -69,3 +69,64 @@ describe('total likes', () => {
       assert.strictEqual(result, 0)
     })
   })
+
+describe('favorite blog', () => {
+    const listWithOneBlog = [
+      {
+        _id: '5a422aa71b54a676234d17f8',
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 5,
+        __v: 0
+      }
+    ]
+
+    const listWithTwoBlogs = [
+      {
+        _id: '5a422aa71b54a676234d17f8',
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 5,
+        __v: 0
+      },
+      {
+        _id: '420',
+        title: 'Jäätyminen',
+        author: 'Remi Lindholm',
+        url: 'New York Times',
+        likes: 69,
+        __v: 0
+      }
+    ]
+
+    const emptyObject = [
+      {
+
+      }
+    ]
+
+    const emptyList = [
+    ]
+  
+    test('when list has only one blog, it has the max value', () => {
+      const result = listHelper.favoriteBlog(listWithOneBlog)
+      assert.deepStrictEqual(result, listWithOneBlog[0])
+    })
+
+    test('when list has two blogs, sum equals those', () => {
+      const result = listHelper.favoriteBlog(listWithTwoBlogs)
+      assert.deepStrictEqual(result, listWithTwoBlogs[1])
+    })
+
+    test('empty object returns empty object', () => {
+      const result = listHelper.favoriteBlog(emptyObject)
+      assert(result, {})
+    })
+
+    test('empty list returns zero', () => {
+      const result = listHelper.favoriteBlog(emptyList)
+      assert.strictEqual(result, 0)
+    })
+  })
