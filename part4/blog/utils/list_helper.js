@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const dummy = (blogs) => {
     return 1
   }
@@ -22,9 +24,16 @@ const favoriteBlog = (blogs) => {
     )
 }
 
+const mostBlogs = (blogs) => {
+  const counts = _.maxBy(_.entries(_.countBy(blogs, function(o) {return o.author})), _.last)
+  const res = _.zipObject(['author', 'blogs'], counts)
+  return res
+}
+
   module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
+    mostBlogs
   }
 

@@ -130,3 +130,58 @@ describe('favorite blog', () => {
       assert.strictEqual(result, 0)
     })
   })
+
+describe('most blogs', () => {
+    const listWithOneBlog = [
+      {
+        _id: '5a422aa71b54a676234d17f8',
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 5,
+        __v: 0
+      }
+    ]
+
+    const listWithTwoBlogs = [
+      {
+        _id: '5a422aa71b54a676234d17f8',
+        title: 'Go To Statement Considered Harmful',
+        author: 'Edsger W. Dijkstra',
+        url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+        likes: 5,
+        __v: 0
+      },
+      {
+        _id: '420',
+        title: 'Jäätyminen',
+        author: 'Remi Lindholm',
+        url: 'New York Times',
+        likes: 69,
+        __v: 0
+      },
+      {
+        _id: '420',
+        title: 'Jäätyminen 2',
+        author: 'Remi Lindholm',
+        url: 'New York Times',
+        likes: 69,
+        __v: 0
+      }
+    ]
+
+    const emptyObject = [
+      {
+
+      }
+    ]
+
+    const emptyList = [
+    ]
+  
+    test('when list has only two blogs...', () => {
+      const result = listHelper.mostBlogs(listWithTwoBlogs)
+      assert.deepStrictEqual(result, {'author': 'Remi Lindholm', 'blogs': 2})
+    })
+
+  })
