@@ -25,8 +25,18 @@ const favoriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
-  const counts = _.maxBy(_.entries(_.countBy(blogs, function(o) {return o.author})), _.last)
-  const res = _.zipObject(['author', 'blogs'], counts)
+  return blogs.length === 0
+  ? 0
+  : _.zipObject(['author', 'blogs'], _.maxBy(_.entries(_.countBy(blogs, function(o) {return o.author})), _.last))
+}
+
+const mostLikes = (blogs) => {
+  const temp = _(blogs).groupBy('author').map((blog, author) => ({
+    author: author,
+    likes: _.sumBy(blog, 'likes')
+  }))
+  .value()
+  const res = _.maxBy(temp, 'likes')
   return res
 }
 
@@ -34,6 +44,7 @@ const mostBlogs = (blogs) => {
     dummy,
     totalLikes,
     favoriteBlog,
-    mostBlogs
+    mostBlogs,
+    mostLikes
   }
 
