@@ -30,23 +30,42 @@ beforeEach(async () => {
     await blogObject.save()
 })
 
-test.only('blogs are returned as json', async () => {
+test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
   
-test.only('all blogs are returned', async () => {
+test('all blogs are returned', async () => {
 const response = await api.get('/api/blogs')
 
 assert.strictEqual(response.body.length, 2)
 })
 
-test.only('blogs have identifier named id', async () => {
+test('blogs have identifier named id', async () => {
     const response = await api.get('/api/blogs')
     assert.strictEqual(Object.keys(response.body[0]).at(-1), 'id')
-    })
+})
+
+test.only('blogs are posted correctl and they increase blog count correctly', async () => {
+
+  const newBlog = {
+      "title": "1Q84",
+      "author": "Murakami",
+      "url": "https://www.goodreads.com/book/show/10357575-1q84",
+      "likes": 118329
+    }
+  await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, 3)
+})
+
 
 after(async () => {
 await mongoose.connection.close()
