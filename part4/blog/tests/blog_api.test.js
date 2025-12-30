@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const { CLIENT_RENEG_WINDOW } = require('node:tls')
 
 const api = supertest(app)
 
@@ -37,12 +38,17 @@ test.only('blogs are returned as json', async () => {
       .expect('Content-Type', /application\/json/)
   })
   
-  test.only('all blogs are returned', async () => {
-    const response = await api.get('/api/blogs')
-  
-    assert.strictEqual(response.body.length, 2)
-  })
+test.only('all blogs are returned', async () => {
+const response = await api.get('/api/blogs')
 
-  after(async () => {
-    await mongoose.connection.close()
-  })
+assert.strictEqual(response.body.length, 2)
+})
+
+test.only('blogs have identifier named id', async () => {
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(Object.keys(response.body[0]).at(-1), 'id')
+    })
+
+after(async () => {
+await mongoose.connection.close()
+})
