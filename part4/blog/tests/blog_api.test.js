@@ -48,25 +48,69 @@ test('blogs have identifier named id', async () => {
     assert.strictEqual(Object.keys(response.body[0]).at(-1), 'id')
 })
 
-test.only('blogs are posted correctl and they increase blog count correctly', async () => {
+test('blogs are posted correctl and they increase blog count correctly', async () => {
 
-  const newBlog = {
-      "title": "1Q84",
-      "author": "Murakami",
-      "url": "https://www.goodreads.com/book/show/10357575-1q84",
-      "likes": 118329
+    const newBlog = {
+        "title": "1Q84",
+        "author": "Murakami",
+        "url": "https://www.goodreads.com/book/show/10357575-1q84",
+        "likes": 118329
+        }
+    const postResponse = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    const {id, ...createdBlog} = postResponse.body
+    assert.deepStrictEqual(createdBlog, newBlog)
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, 3)
     }
-  const postResponse = await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-  const {id, ...createdBlog} = postResponse.body
-  assert.deepStrictEqual(createdBlog, newBlog)
-  const response = await api.get('/api/blogs')
-  assert.strictEqual(response.body.length, 3)
-})
+)
 
+test('missing likes defaults to zero', async () => {
+
+    const newBlog = {
+        "title": "GEB",
+        "author": "Hofstadter",
+        "url": "https://www.goodreads.com/book/show/24113.G_del_Escher_Bach",
+        }
+    const postResponse = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    assert.strictEqual(postResponse.body.likes, 0)
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, 3)
+    }
+)
+
+test.only('missing title or url returns 400', async () => {
+
+    const newBlog = {
+        "author": "Green",
+        "url": "https://www.goodreads.com/book/show/220341389-everything-is-tuberculosis?from_choice=true",
+        }
+    postResponse = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, 2)
+
+    const newBlog2 = {
+        "title": "Everything Is Tuberculosis",
+        "author": "Green",
+        }
+    postResponse2 = await api
+        .post('/api/blogs')
+        .send(newBlog2)
+        .expect(400)
+    const response2 = await api.get('/api/blogs')
+    assert.strictEqual(response2.body.length, 2)
+    }
+)
 
 after(async () => {
 await mongoose.connection.close()
