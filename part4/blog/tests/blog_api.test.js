@@ -56,12 +56,13 @@ test.only('blogs are posted correctl and they increase blog count correctly', as
       "url": "https://www.goodreads.com/book/show/10357575-1q84",
       "likes": 118329
     }
-  await api
+  const postResponse = await api
       .post('/api/blogs')
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-
+  const {id, ...createdBlog} = postResponse.body
+  assert.deepStrictEqual(createdBlog, newBlog)
   const response = await api.get('/api/blogs')
   assert.strictEqual(response.body.length, 3)
 })
