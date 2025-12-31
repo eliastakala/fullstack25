@@ -3,6 +3,7 @@ const { test, after, beforeEach } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const helper = require('./test_helper')
 const Blog = require('../models/blog')
 
 const api = supertest(app)
@@ -86,7 +87,7 @@ test('missing likes defaults to zero', async () => {
     }
 )
 
-test.only('missing title or url returns 400', async () => {
+test('missing title or url returns 400', async () => {
 
     const newBlog = {
         "author": "Green",
@@ -111,6 +112,43 @@ test.only('missing title or url returns 400', async () => {
     assert.strictEqual(response2.body.length, 2)
     }
 )
+
+test('a blog can be deleted', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+  
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+  
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map((n) => n.title)
+    assert(!titles.includes(blogToDelete.title))
+    
+    assert.strictEqual(blogsAtEnd.length, initialBlogs.length - 1)
+  })
+
+test.only('a blog can be edited', async () => {
+
+    const editedBlog = {
+        "likes": 600,
+    }
+
+    const blogsAtStart = await helper.blogsInDb()
+
+    const blogToEdit = blogsAtStart[0]
+  
+    await api
+        .put(`/api/blogs/${blogToEdit.id}`)
+        .send(editedBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+  
+    const blogsAtEnd = await helper.blogsInDb()
+    const titles = blogsAtEnd.map((n) => n.title)
+    assert(titles.includes(blogToEdit.title))
+    
+    assert.strictEqual(blogsAtEnd.length, initialBlogs.length)
+})
+  
 
 after(async () => {
 await mongoose.connection.close()
