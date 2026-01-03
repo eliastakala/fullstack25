@@ -161,7 +161,7 @@ describe('when there is initially one user in db', () => {
     await user.save()
   })
 
-  test.only('creation succeeds with a fresh username', async () => {
+  test('creation succeeds with a fresh username', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -181,6 +181,111 @@ describe('when there is initially one user in db', () => {
 
     const usernames = usersAtEnd.map(u => u.username)
     assert(usernames.includes(newUser.username))
+  })
+})
+
+describe('invalid user can not be created', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test.only('creation with too short password does not succeed', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 'sa',
+    }
+
+    response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    
+    assert.strictEqual(response.body.error, "Password must be at least 3 characters long")
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(!usernames.includes(newUser.username))
+  })
+
+  test.only('creation with too short username does not succeed', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'ml',
+      name: 'Matti Luukkainen',
+      password: 'sal',
+    }
+
+    response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    
+    assert.match(response.body.error, /username.*shorter than/i)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(!usernames.includes(newUser.username))
+  })
+
+  test.only('creation without username does not succeed', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      name: 'Matti Luukkainen',
+      password: 'seppo123'
+    }
+
+    response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    
+    assert.strictEqual(response.body.error, 'User validation failed: username: Path `username` is required.')
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(!usernames.includes(newUser.username))
+  })
+
+  test.only('creation without password does not succeed', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'mlaf',
+      name: 'Matti Luukkainen',
+    }
+
+    response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    
+    assert.strictEqual(response.body.error, 'Insert password')
+
+    const usersAtEnd = await helper.usersInDb()
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(!usernames.includes(newUser.username))
   })
 })
   
