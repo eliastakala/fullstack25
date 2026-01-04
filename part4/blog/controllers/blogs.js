@@ -8,18 +8,9 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-// const getTokenFrom = request => {
-//   const authorization = request.get('authorization')
-//   if (authorization && authorization.startsWith('Bearer ')) {
-//     return authorization.replace('Bearer ', '')
-//   }
-//   return null
-// }
-
 blogsRouter.post('/', async (request, response, next) => {
   try {  
     const body = request.body
-    // const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if (!decodedToken.id) {
       return response.status(401).json({ error: 'token invalid' })
@@ -50,9 +41,14 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
     const id = request.params.id
-    await Blog.findByIdAndDelete(id)
-    response.status(204).end()
+    const blogToDelete = await Blog.findById(request.params.id)
+    if (blogToDelete.user.toString() === decodedToken.id) {
+      await Blog.findByIdAndDelete(id)
+      response.status(204).end()
+    }
+    return response.status(403).json({ error: 'only the creator can delete a blog' })
   } catch (exception) {
     next(exception)
   }
