@@ -11,18 +11,18 @@ const User = require('../models/user')
 const api = supertest(app)
 
 const initialBlogs = [
-    {
-        "title": "The Prince",
-        "author": "Machiavelli",
-        "url": "https://www.goodreads.com/book/show/28862.The_Prince",
-        "likes": "114318"
-    },
-    {
-        "title": "The Alchemist",
-        "author": "Coelho",
-        "url": "https://www.goodreads.com/book/show/18144590-the-alchemist",
-        "likes": "1405461"
-    }
+  {
+      "title": "The Prince",
+      "author": "Machiavelli",
+      "url": "https://www.goodreads.com/book/show/28862.The_Prince",
+      "likes": "114318"
+  },
+  {
+      "title": "The Alchemist",
+      "author": "Coelho",
+      "url": "https://www.goodreads.com/book/show/18144590-the-alchemist",
+      "likes": "1405461"
+  }
 ]
 
 beforeEach(async () => {
@@ -51,7 +51,7 @@ test('blogs have identifier named id', async () => {
     assert.strictEqual(Object.keys(response.body[0]).at(-1), 'id')
 })
 
-test('blogs are posted correctl and they increase blog count correctly', async () => {
+test('blogs are posted correctly and they increase blog count correctly', async () => {
 
     const newBlog = {
         "title": "1Q84",
@@ -194,7 +194,7 @@ describe('invalid user can not be created', () => {
     await user.save()
   })
 
-  test.only('creation with too short password does not succeed', async () => {
+  test('creation with too short password does not succeed', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -218,7 +218,7 @@ describe('invalid user can not be created', () => {
     assert(!usernames.includes(newUser.username))
   })
 
-  test.only('creation with too short username does not succeed', async () => {
+  test('creation with too short username does not succeed', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -242,7 +242,7 @@ describe('invalid user can not be created', () => {
     assert(!usernames.includes(newUser.username))
   })
 
-  test.only('creation without username does not succeed', async () => {
+  test('creation without username does not succeed', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
@@ -265,7 +265,7 @@ describe('invalid user can not be created', () => {
     assert(!usernames.includes(newUser.username))
   })
 
-  test.only('creation without password does not succeed', async () => {
+  test('creation without password does not succeed', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
