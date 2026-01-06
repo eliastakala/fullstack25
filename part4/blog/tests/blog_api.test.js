@@ -15,7 +15,8 @@ const initialBlogs = [
       "title": "The Prince",
       "author": "Machiavelli",
       "url": "https://www.goodreads.com/book/show/28862.The_Prince",
-      "likes": "114318"
+      "likes": "114318",
+      "id": "695c1cc7e64f8bfd1fce30f6"
   },
   {
       "title": "The Alchemist",
@@ -126,7 +127,7 @@ test('a blog can be deleted', async () => {
     assert(!titles.includes(blogToDelete.title))
     
     assert.strictEqual(blogsAtEnd.length, initialBlogs.length - 1)
-  })
+})
 
 test('a blog can be edited', async () => {
 
@@ -181,6 +182,137 @@ describe('when there is initially one user in db', () => {
 
     const usernames = usersAtEnd.map(u => u.username)
     assert(usernames.includes(newUser.username))
+  })
+})
+
+describe('user creation and log in', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+  })
+
+  test.only('creating new user', async () => {
+    const newUser = {
+      username: "eki",
+      name: "eero",
+      password: "remi"
+    }
+    
+    response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+  })
+
+  test.only('user without username / password cannot be created', async () => {
+    const newUser = {
+      name: "eero",
+      password: "remi"
+    }
+    
+    response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const newUser2 = {
+      username: "eki",
+      name: "eero"
+    }
+    
+    response = await api
+      .post('/api/users')
+      .send(newUser2)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  })
+
+  test('logging in', async() => {
+
+    const newUser = {
+      username: "eki",
+      name: "eero",
+      password: "remi"
+    }
+
+    const user = {
+      username: "eki",
+      password: "remi"
+    }
+    
+    await api
+      .post('/api/users')
+      .send(newUser)
+
+    response = await api
+      .post('/api/login')
+      .send(user)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    console.log('response', response.body.token)
+  })
+})
+
+describe('post creation and delete', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+  })
+
+  test.only('add a post', async() => {
+
+    const newUser = {
+      username: "eki",
+      name: "eero",
+      password: "remi"
+    }
+
+    const user = {
+      username: "eki",
+      password: "remi"
+    }
+    
+    await api
+      .post('/api/users')
+      .send(newUser)
+
+    response = await api
+      .post('/api/login')
+      .send(user)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    
+    const authToken = 'Bearer ' + response.body.token
+
+    const newBlog = {
+        "title": "1Q84",
+        "author": "Murakami",
+        "url": "https://www.goodreads.com/book/show/10357575-1q84",
+        "likes": 118329
+        }
+
+    const targetBlog = {
+        "title": "1Q84",
+        "author": "Murakami",
+        "url": "https://www.goodreads.com/book/show/10357575-1q84",
+        "user": response.body.id,
+        "likes": 118329
+        }
+      
+    const postResponse = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .set({ Authorization: authToken })
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+    const {id, ...createdBlog} = postResponse.body
+    assert.deepStrictEqual(createdBlog, targetBlog)
+    const finalResponse = await api.get('/api/blogs')
+    assert.strictEqual(finalResponse.body.length, 3)
+
   })
 })
 
