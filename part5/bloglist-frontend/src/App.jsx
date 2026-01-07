@@ -5,9 +5,22 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [newBlog, setNewBlog] = useState('')
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
+
+  const addBlog = event => {
+    event.preventDefault()
+    const blogObject = {
+      title: newBlog
+    }
+
+    blogService.create(blogObject).then(returnedBlog => {
+      setBlogs(blogs.concat(returnedBlog))
+      setNewBlog('')
+    })
+  }
 
   const loginForm = () => (
     
@@ -68,15 +81,17 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       ) 
 
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
     } catch {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      console.log('wrong credentials')
     }
+  }
+
+  const handleBlogChange = event => {
+    setNewBlog(event.target.value)
   }
 
   return (
@@ -89,6 +104,10 @@ const App = () => {
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}
+          <form onSubmit={addBlog}>
+            <input value={newBlog} onChange={handleBlogChange} />
+            <button type="submit">save</button>
+          </form>
         </div>
       )}
       
