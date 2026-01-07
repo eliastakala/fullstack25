@@ -1,25 +1,46 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import { SuccessNotification, ErrorNotification } from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlog, setNewBlog] = useState('')
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
-  const addBlog = event => {
+  const addBlog = async event => {
     event.preventDefault()
-    const blogObject = {
-      title: newBlog
-    }
+    try {
+      const blogObject = {
+        title: newTitle,
+        author: newAuthor,
+        url: newUrl
+      }
 
-    blogService.create(blogObject).then(returnedBlog => {
-      setBlogs(blogs.concat(returnedBlog))
-      setNewBlog('')
-    })
+      const response = await blogService.create(blogObject)
+      setBlogs(blogs.concat(response))
+      setNewTitle('')
+      setNewAuthor('')
+      setNewUrl('')
+
+      setSuccessMessage('Blog entry created')
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+    } catch {
+      setErrorMessage('token expired')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
   }
 
   const loginForm = () => (
@@ -28,7 +49,7 @@ const App = () => {
       <div>
         <h2>Log in to application</h2>
         <label>
-          username
+          username:
           <input
             type="text"
             value={username}
@@ -38,7 +59,7 @@ const App = () => {
       </div>
       <div>
         <label>
-          password
+          password:
           <input
             type="password"
             value={password}
@@ -49,8 +70,6 @@ const App = () => {
       <button type="submit">login</button>
     </form>
   )
-
-  
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -85,17 +104,34 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setSuccessMessage('Login successful')
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     } catch {
-      console.log('wrong credentials')
+      setErrorMessage('wrong credentials')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
-  const handleBlogChange = event => {
-    setNewBlog(event.target.value)
+  const handleTitleChange = event => {
+    setNewTitle(event.target.value)
+  }
+
+  const handleAuthorChange = event => {
+    setNewAuthor(event.target.value)
+  }
+
+  const handleUrlChange = event => {
+    setNewUrl(event.target.value)
   }
 
   return (
     <div>
+      <ErrorNotification message={errorMessage} />
+      <SuccessNotification message={successMessage} />
       {!user && loginForm()}
       {user && (
         <div>
@@ -105,7 +141,33 @@ const App = () => {
             <Blog key={blog.id} blog={blog} />
           )}
           <form onSubmit={addBlog}>
-            <input value={newBlog} onChange={handleBlogChange} />
+            <div>
+              <label>
+                title:
+                <input
+                  value={newTitle}
+                  onChange={handleTitleChange}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                author:
+                <input
+                  value={newAuthor}
+                  onChange={handleAuthorChange}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                url:
+                <input
+                  value={newUrl}
+                  onChange={handleUrlChange}
+                />
+              </label>
+            </div>
             <button type="submit">save</button>
           </form>
         </div>
