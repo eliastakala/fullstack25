@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import { SuccessNotification, ErrorNotification } from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -7,36 +9,42 @@ import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newTitle, setNewTitle] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('')
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
-  const addBlog = async event => {
-    event.preventDefault()
+  const addBlog = async (blogObject) => {
     try {
-      const blogObject = {
-        title: newTitle,
-        author: newAuthor,
-        url: newUrl
-      }
-
       const response = await blogService.create(blogObject)
       setBlogs(blogs.concat(response))
-      setNewTitle('')
-      setNewAuthor('')
-      setNewUrl('')
-
       setSuccessMessage('Blog entry created')
       setTimeout(() => {
         setSuccessMessage(null)
       }, 5000)
     } catch {
       setErrorMessage('token expired')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+  const like = async (id) => {
+    console.log('id', id)
+    const blog = blogs.find(n => n.id === id)
+    console.log('blog', blog)
+    const changedBlog = { ...blog, likes: blog.likes + 1 }
+    console.log('changedblog', changedBlog)
+    try {
+      const response = await blogService.update(id, changedBlog)
+      setBlogs(blogs.map(blog => (blog.id !== id ? blog : response)))
+      console.log('response', response)
+    } catch {
+      setErrorMessage(
+        `Note '${note.content}' was already removed from server`
+      )
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -75,6 +83,7 @@ const App = () => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
+    console.log('all blogs', blogs)
   }, [])
 
   useEffect(() => {
@@ -95,7 +104,6 @@ const App = () => {
     
     try {
       const user = await loginService.login({ username, password })
-
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       ) 
@@ -116,17 +124,7 @@ const App = () => {
     }
   }
 
-  const handleTitleChange = event => {
-    setNewTitle(event.target.value)
-  }
-
-  const handleAuthorChange = event => {
-    setNewAuthor(event.target.value)
-  }
-
-  const handleUrlChange = event => {
-    setNewUrl(event.target.value)
-  }
+  
 
   return (
     <div>
@@ -138,38 +136,11 @@ const App = () => {
           <h2>blogs</h2>
           <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} like={() => like(blog.id)} />
           )}
-          <form onSubmit={addBlog}>
-            <div>
-              <label>
-                title:
-                <input
-                  value={newTitle}
-                  onChange={handleTitleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                author:
-                <input
-                  value={newAuthor}
-                  onChange={handleAuthorChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                url:
-                <input
-                  value={newUrl}
-                  onChange={handleUrlChange}
-                />
-              </label>
-            </div>
-            <button type="submit">save</button>
-          </form>
+          <Togglable buttonLabel="new blog">
+            <BlogForm createBlog={addBlog}/>
+          </Togglable>
         </div>
       )}
       
