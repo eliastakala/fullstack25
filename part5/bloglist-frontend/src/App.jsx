@@ -32,15 +32,12 @@ const App = () => {
   }
 
   const like = async (id) => {
-    console.log('id', id)
     const blog = blogs.find(n => n.id === id)
-    console.log('blog', blog)
     const changedBlog = { ...blog, likes: blog.likes + 1 }
-    console.log('changedblog', changedBlog)
     try {
       const response = await blogService.update(id, changedBlog)
-      setBlogs(blogs.map(blog => (blog.id !== id ? blog : response)))
-      console.log('response', response)
+      const newBlogs = blogs.map(blog => (blog.id !== id ? blog : response))
+      setBlogs( newBlogs.sort((a, b) => b.likes - a.likes) ) 
     } catch {
       setErrorMessage(
         `Note '${note.content}' was already removed from server`
@@ -81,9 +78,8 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
     )  
-    console.log('all blogs', blogs)
   }, [])
 
   useEffect(() => {
