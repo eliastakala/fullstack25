@@ -9,8 +9,8 @@ import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
@@ -35,7 +35,7 @@ const App = () => {
     const blogToDelete = blogs.find(n => n.id === id)
     if (window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}`)) {
       try {
-        const response = await blogService.deleteBlog(id)
+        await blogService.deleteBlog(id) // removed the const response from here
         const rest = blogs.filter(n => n.id !== id)
         setBlogs(rest)
         setSuccessMessage('Blog deleted')
@@ -44,7 +44,7 @@ const App = () => {
         }, 5000)
       } catch {
         setErrorMessage(
-          `token expired`
+          'token expired'
         )
         setTimeout(() => {
           setErrorMessage(null)
@@ -59,10 +59,10 @@ const App = () => {
     try {
       const response = await blogService.update(id, changedBlog)
       const newBlogs = blogs.map(blog => (blog.id !== id ? blog : response))
-      setBlogs( newBlogs.sort((a, b) => b.likes - a.likes) ) 
+      setBlogs( newBlogs.sort((a, b) => b.likes - a.likes))
     } catch {
       setErrorMessage(
-        `Already removed from server`
+        'Already removed from server'
       )
       setTimeout(() => {
         setErrorMessage(null)
@@ -71,7 +71,6 @@ const App = () => {
   }
 
   const loginForm = () => (
-    
     <form onSubmit={handleLogin}>
       <div>
         <h2>Log in to application</h2>
@@ -101,7 +100,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -119,12 +118,11 @@ const App = () => {
 
   const handleLogin = async event => {
     event.preventDefault()
-    
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
 
       blogService.setToken(user.token)
       setUser(user)
@@ -142,10 +140,7 @@ const App = () => {
     }
   }
 
-  
-
   return (
-    
     <div>
       <ErrorNotification message={errorMessage} />
       <SuccessNotification message={successMessage} />

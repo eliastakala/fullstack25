@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const Blog = ({ blog, like, deleteBlog, user }) => {
   const [visible, setVisible] = useState(false)
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
 
-  const deleteVisible = {display: user.id === blog.user.id ? '': 'none'}
+  const deleteVisible = { display: user.id === blog.user.id ? '': 'none' }
 
   const blogStyle = {
     paddingTop: 10,
@@ -15,7 +15,7 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
     marginBottom: 5
   }
 
-  const details = () => {
+  const details = () => {
     setVisible(!visible)
   }
 
@@ -25,7 +25,7 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
         <div style={blogStyle}>
           <div>
             {blog.title} {blog.author} <button onClick={details}>show details</button>
-          </div>  
+          </div>
         </div>
       </div>
       <div style={showWhenVisible}>
@@ -36,7 +36,7 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
             <div> {blog.likes} <button onClick={like}>like</button></div>
             <div> {blog.author} </div>
             <div style={deleteVisible}> <button onClick={deleteBlog}>delete</button></div>
-          </div>  
+          </div>
         </div>
       </div>
     </div>
