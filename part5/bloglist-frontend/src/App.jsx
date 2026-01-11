@@ -32,21 +32,24 @@ const App = () => {
   }
 
   const deleteBlog = async (id) => {
-    try {
-      const response = await blogService.deleteBlog(id)
-      const rest = blogs.filter(n => n.id !== id)
-      setBlogs(rest)
-      setSuccessMessage('Blog deleted')
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
-    } catch {
-      setErrorMessage(
-        `token expired`
-      )
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+    const blogToDelete = blogs.find(n => n.id === id)
+    if (window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}`)) {
+      try {
+        const response = await blogService.deleteBlog(id)
+        const rest = blogs.filter(n => n.id !== id)
+        setBlogs(rest)
+        setSuccessMessage('Blog deleted')
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
+      } catch {
+        setErrorMessage(
+          `token expired`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
     }
   }
 

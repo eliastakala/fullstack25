@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 const Blog = ({ blog, like, deleteBlog, user }) => {
   const [visible, setVisible] = useState(false)
-  console.log('blogi', blog)
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
 
