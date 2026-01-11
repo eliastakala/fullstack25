@@ -31,6 +31,25 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (id) => {
+    try {
+      const response = await blogService.deleteBlog(id)
+      const rest = blogs.filter(n => n.id !== id)
+      setBlogs(rest)
+      setSuccessMessage('Blog deleted')
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+    } catch {
+      setErrorMessage(
+        `token expired`
+      )
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const like = async (id) => {
     const blog = blogs.find(n => n.id === id)
     const changedBlog = { ...blog, likes: blog.likes + 1 }
@@ -40,7 +59,7 @@ const App = () => {
       setBlogs( newBlogs.sort((a, b) => b.likes - a.likes) ) 
     } catch {
       setErrorMessage(
-        `Note '${note.content}' was already removed from server`
+        `Already removed from server`
       )
       setTimeout(() => {
         setErrorMessage(null)
@@ -123,6 +142,7 @@ const App = () => {
   
 
   return (
+    
     <div>
       <ErrorNotification message={errorMessage} />
       <SuccessNotification message={successMessage} />
@@ -132,14 +152,13 @@ const App = () => {
           <h2>blogs</h2>
           <p>{user.name} logged in <button onClick={handleLogout}>Logout</button></p>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} like={() => like(blog.id)} />
+            <Blog key={blog.id} blog={blog} like={() => like(blog.id)} deleteBlog={() => deleteBlog(blog.id)} user={user}/>
           )}
           <Togglable buttonLabel="new blog">
             <BlogForm createBlog={addBlog}/>
           </Togglable>
         </div>
       )}
-      
     </div>
   )
 }
