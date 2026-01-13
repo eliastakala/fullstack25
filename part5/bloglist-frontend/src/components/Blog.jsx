@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
+import ShortInfo from './ShortInfo'
+import LongInfo from './LongInfo'
 
 const Blog = ({ blog, like, deleteBlog, user }) => {
   const [visible, setVisible] = useState(false)
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
+  // const hideWhenVisible = { display: visible ? 'none' : '' }
+  // const showWhenVisible = { display: visible ? '' : 'none' }
 
   const deleteVisible = { display: user.id === blog.user.id ? '': 'none' }
 
@@ -21,24 +23,15 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
 
   return (
     <div>
-      <div style={hideWhenVisible}>
+      {!visible ? (
         <div style={blogStyle}>
-          <div className='shortInfo'>
-            {blog.title} {blog.author} <button onClick={details}>show details</button>
-          </div>
+          <ShortInfo blog={blog} details={details}/>
         </div>
-      </div>
-      <div style={showWhenVisible}>
+      ) : (
         <div style={blogStyle}>
-          <div>
-            <div> {blog.title} <button onClick={details}>hide</button> </div>
-            <div> {blog.url} </div>
-            <div> {blog.likes} <button onClick={like}>like</button></div>
-            <div> {blog.author} </div>
-            <div style={deleteVisible}> <button onClick={deleteBlog}>delete</button></div>
-          </div>
+          <LongInfo blog={blog} details={details} like={like} deleteVisible={deleteVisible} deleteBlog={deleteBlog}/>
         </div>
-      </div>
+      )}
     </div>
   )
 }
