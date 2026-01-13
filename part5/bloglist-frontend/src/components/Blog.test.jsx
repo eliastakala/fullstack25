@@ -17,7 +17,7 @@ test('renders content correctly', () => {
   }
 
   render(<Blog blog={blog} user={user} />)
-
   const element = screen.getByText('Component testing is done with react-testing-library')
   expect(element).toBeDefined()
+  console.log(screen)
 })

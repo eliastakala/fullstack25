@@ -23,7 +23,7 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
     <div>
       <div style={hideWhenVisible}>
         <div style={blogStyle}>
-          <div>
+          <div className='shortInfo'>
             {blog.title} {blog.author} <button onClick={details}>show details</button>
           </div>
         </div>
