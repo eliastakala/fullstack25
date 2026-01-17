@@ -62,7 +62,8 @@ blogsRouter.put('/:id', async (request, response, next) => {
 
   try {
     const savedBlog = await blog.save()
-    response.json(savedBlog)
+    const populatedBlog = await savedBlog.populate('user', { username: 1, name: 1 })
+    response.json(populatedBlog)
   } catch (exception) {
     next(exception)
   }
