@@ -4,8 +4,8 @@ import LongInfo from './LongInfo'
 
 const Blog = ({ blog, like, deleteBlog, user }) => {
   const [visible, setVisible] = useState(false)
-  // const hideWhenVisible = { display: visible ? 'none' : '' }
-  // const showWhenVisible = { display: visible ? '' : 'none' }
+  const hide = { display: visible ? 'none' : '' }
+  const show = { display: visible ? '' : 'none' }
 
   const deleteVisible = { display: user.id === blog.user.id ? '': 'none' }
 
@@ -23,16 +23,24 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
 
   return (
     <div>
-      {!visible ? (
-        <div style={blogStyle}>
-          <ShortInfo blog={blog} details={details}/>
+      <div style={blogStyle}>
+        <div style={hide}>
+          <div id='titleAndAuthor'>
+            {blog.title} {blog.author} <button onClick={details}>show details</button>
+          </div>
         </div>
-      ) : (
-        <div style={blogStyle}>
-          <LongInfo blog={blog} details={details} like={like} deleteVisible={deleteVisible} deleteBlog={deleteBlog}/>
+        <div style={show}>
+          <div>
+            <div> {blog.title} <button onClick={details}>hide</button> </div>
+            <div> {blog.url} </div>
+            <div> {blog.likes} <button onClick={like}>like</button></div>
+            <div> {blog.author} </div>
+            <div style={deleteVisible}> <button onClick={deleteBlog}>delete</button></div>
+          </div>
         </div>
-      )}
+      </div>
     </div>
+
   )
 }
 
