@@ -19,22 +19,23 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
 
   const details = () => {
     setVisible(!visible)
+    console.log("user", blog)
   }
 
   return (
     <div>
       <div style={blogStyle}>
         <div style={hide}>
-          <div id='titleAndAuthor'>
+          <div className='shortDetails'>
             {blog.title} {blog.author} <button onClick={details}>show details</button>
           </div>
         </div>
         <div style={show}>
-          <div>
-            <div> {blog.title} <button onClick={details}>hide</button> </div>
-            <div> {blog.url} </div>
-            <div> {blog.likes} <button onClick={like}>like</button></div>
-            <div> {blog.author} </div>
+          <div className='longDetails'>
+            <div id='longTitle'> {blog.title} {blog.author} <button onClick={details}>hide</button> </div>
+            <div id='url'> {blog.url} </div>
+            <div id='likes'> {blog.likes} <button onClick={like}>like</button></div>
+            <div id='longAuthor'> {blog.user.name} </div>
             <div style={deleteVisible}> <button onClick={deleteBlog}>delete</button></div>
           </div>
         </div>

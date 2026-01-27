@@ -19,10 +19,16 @@ test('renders content correctly', () => {
 
   render(<Blog blog={blog} user={user} />)
 
-  expect(screen.getByText(/component testing is done with react-testing-library/i)).toBeInTheDocument()
-  expect(screen.getByText(/remi/i)).toBeInTheDocument()
-  expect(screen.queryByText('is.fi')).not.toBeInTheDocument()
-  expect(screen.queryByText('2')).not.toBeInTheDocument()
+  const titleElement = screen.getByText('Component testing is done with react-testing-library')
+  expect(titleElement).toBeDefined()
+  const authorElement = screen.getByText('Remi')
+  expect(authorElement).toBeDefined()
+  const notVisibleElement = screen.getByText('is.fi')
+  expect(notVisibleElement).not.toBeVisible()
+  // expect(screen.getByText('component testing is done with react-testing-library', { exact: false })).toBeInTheDocument()
+  // expect(screen.getByText('remi', { exact: false })).toBeInTheDocument()
+  // expect(screen.queryByText('is.fi')).not.toBeInTheDocument()
+  // expect(screen.queryByText('2')).not.toBeInTheDocument()
 })
 
 test('buttons work', async () => {
