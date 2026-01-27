@@ -23,6 +23,8 @@ test('renders content correctly', () => {
   expect(titleElement).toBeDefined()
   const authorElement = screen.getByText('Remi')
   expect(authorElement).toBeDefined()
+  const urlElement = screen.getByText('is.fi')
+  expect(urlElement).not.toBeVisible()
   const notVisibleElement = screen.getByText('is.fi')
   expect(notVisibleElement).not.toBeVisible()
   // expect(screen.getByText('component testing is done with react-testing-library', { exact: false })).toBeInTheDocument()
