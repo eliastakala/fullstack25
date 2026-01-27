@@ -6,45 +6,39 @@ test('renders content correctly', () => {
   const user = {
     name: 'Remi',
     username: 'remil',
-    id: 'paskaa'
+    id: 'test user id'
   }
   const blog = {
-    id: 'siis ihan paskaa',
-    title: 'Component testing is done with react-testing-library',
+    id: 'testing id',
+    title: 'testing title',
     author: 'Remi',
-    user: { id: 'paskaa' },
-    url: 'is.fi',
+    user: { id: 'test user id' },
+    url: 'test url',
     likes: 2
   }
 
   render(<Blog blog={blog} user={user} />)
 
-  const titleElement = screen.getByText('Component testing is done with react-testing-library')
+  const titleElement = screen.getByText('testing title Remi')
   expect(titleElement).toBeDefined()
-  const authorElement = screen.getByText('Remi')
-  expect(authorElement).toBeDefined()
-  const urlElement = screen.getByText('is.fi')
-  expect(urlElement).not.toBeVisible()
-  const notVisibleElement = screen.getByText('is.fi')
-  expect(notVisibleElement).not.toBeVisible()
-  // expect(screen.getByText('component testing is done with react-testing-library', { exact: false })).toBeInTheDocument()
-  // expect(screen.getByText('remi', { exact: false })).toBeInTheDocument()
-  // expect(screen.queryByText('is.fi')).not.toBeInTheDocument()
-  // expect(screen.queryByText('2')).not.toBeInTheDocument()
+  const urlElement = screen.queryByText('test url')
+  expect(urlElement).toBeNull()
+  const likesElement = screen.queryByText(2)
+  expect(likesElement).toBeNull()
 })
 
 test('buttons work', async () => {
   const user = {
     name: 'Remi',
     username: 'remil',
-    id: 'paskaa'
+    id: 'test user id'
   }
   const blog = {
-    id: 'siis ihan paskaa',
-    title: 'Component testing is done with react-testing-library',
+    id: 'testing id',
+    title: 'testing title',
     author: 'Remi',
-    user: { id: 'paskaa' },
-    url: 'is.fi',
+    user: { id: 'test user id' },
+    url: 'test url',
     likes: 2
   }
 
