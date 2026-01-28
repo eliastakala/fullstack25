@@ -26,10 +26,10 @@ const Blog = ({ blog, like, deleteBlog, user }) => {
       </div>
       {visible && (
         <div className='metaContent'>
-          <div id='url'> {blog.url} </div>
-          <div id='likes'> {blog.likes} <button onClick={like}>like</button></div>
-          <div id='username'> {blog.user.name} </div>
-          <div style={deleteVisible} id='deleteButton'> <button onClick={deleteBlog}>delete</button></div>
+          <div className='url'> {blog.url} </div>
+          <div className='likes'> {blog.likes} <button onClick={like}>like</button></div>
+          <div className='username'> {blog.user.name} </div>
+          <div style={deleteVisible} className='deleteButton'> <button onClick={deleteBlog}>delete</button></div>
         </div>
       )}
     </div>
