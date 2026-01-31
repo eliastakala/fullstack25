@@ -23,7 +23,7 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      // ...
+
       await page.getByRole('button', { name: 'login' }).click()
       await page.getByLabel('username').fill('mluukkai')
       await page.getByLabel('password').fill('salainen')
@@ -33,13 +33,24 @@ describe('Blog app', () => {
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      // ...
+
       await page.getByRole('button', { name: 'login' }).click()
       await page.getByLabel('username').fill('mluukkai')
       await page.getByLabel('password').fill('wrong')
       await page.getByRole('button', { name: 'login' }).click()
 
       await expect(page.getByText('wrong credentials')).toBeVisible()
+    })
+
+    test('logged in user can create a blog', async ({ page }) => {
+
+      await page.getByRole('button', { name: 'login' }).click()
+      await page.getByLabel('username').fill('mluukkai')
+      await page.getByLabel('password').fill('salainen')
+      await page.getByRole('button', { name: 'login' }).click()
+      
+
+      await expect(page.getByText('Login successful')).toBeVisible()
     })
   })
 })
