@@ -5,7 +5,6 @@ const Filter = () => {
   const dispatch = useDispatch()
   const handleChange = (event) => {
     dispatch(filterChange(event.target.value))
-    // input-field value is in variable event.target.value
   }
   const style = {
     marginBottom: 10
