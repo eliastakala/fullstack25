@@ -7,7 +7,7 @@ import { useContext } from 'react'
 
 const App = () => {
   const queryClient = useQueryClient()
-  const { notificationDispatch } = useContext(NotificationContext)
+  const { showNotification } = useContext(NotificationContext)
 
   const updateAnecdoteMutation = useMutation({
     mutationFn: updateAnecdote,
@@ -18,10 +18,7 @@ const App = () => {
 
   const handleVote = (anecdote) => {
     updateAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes + 1 })
-    notificationDispatch({ content: anecdote.content, type: 'VOTE' })
-    setTimeout(() => {
-      notificationDispatch({ type: 'NONE' })
-    }, 5000)
+    showNotification({ content: `You just liked '${anecdote.content}'`, type: 'ADD' })
   }
 
   const result = useQuery({

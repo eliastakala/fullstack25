@@ -5,12 +5,16 @@ import NotificationContext from '../NotificationContext'
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
-  const { notificationDispatch } = useContext(NotificationContext)
+  const { showNotification } = useContext(NotificationContext)
 
   const newAnecdoteMutation = useMutation({
     mutationFn: createAnecdote,
-    onSuccess: () => {
+    onSuccess: (newAnecdote) => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
+      showNotification({ content: `You just added '${newAnecdote.content}'`, type: 'ADD' })
+    },
+    onError: () => {
+      showNotification({ content: `Anecdote must have 5 or more characters`, type: 'ADD' })
     }
   })
 
@@ -19,10 +23,6 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
     newAnecdoteMutation.mutate({ content, votes: 0 })
-    notificationDispatch({ content: content, type: 'ADD' })
-    setTimeout(() => {
-      notificationDispatch({ type: 'NONE' })
-    }, 5000)
   }
 
   return (

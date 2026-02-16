@@ -2,7 +2,6 @@ import { useContext } from 'react'
 import NotificationContext from "../NotificationContext"
 
 const Notification = () => {
-  // const [notification, notificationDispatch] = useReducer(notificationReducer, null)
 
   const style = {
     border: 'solid',
@@ -12,13 +11,13 @@ const Notification = () => {
   }
 
   const { notification } = useContext(NotificationContext)
+  if (notification.length === 0) return null
   
-  if (notification) return (
+  return (
     <div style={style}>
       {notification}
     </div>
   )
-  else return null
 }
 
 export default Notification
