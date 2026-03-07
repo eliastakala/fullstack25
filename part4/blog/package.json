@@ -25,6 +25,7 @@
     "mongoose": "^9.0.1"
   },
   "devDependencies": {
+    "prettier": "3.8.1",
     "supertest": "^7.1.4"
   }
 }
