@@ -7,30 +7,28 @@ import {
   ErrorNotification,
 } from "./components/Notification";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
+import loginService from "./services/login"; 
+import { setSuccessnotification } from './reducers/successnotificationReducer'
+import { setErrornotification } from './reducers/errornotificationReducer'
 import "./index.css";
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const App = () => {
+  const dispatch = useDispatch()
+  
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
 
   const addBlog = async (blogObject) => {
     try {
       const response = await blogService.create(blogObject);
       setBlogs(blogs.concat(response));
-      setSuccessMessage("Blog entry created");
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
+      dispatch(setSuccessnotification(`You created something ${response.title}`, 5))
     } catch {
-      setErrorMessage("token expired");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(setErrornotification(`token expired`, 5))
     }
   };
 
@@ -45,15 +43,9 @@ const App = () => {
         await blogService.deleteBlog(id); // removed the const response from here
         const rest = blogs.filter((n) => n.id !== id);
         setBlogs(rest);
-        setSuccessMessage("Blog deleted");
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 5000);
+        dispatch(setSuccessnotification(`Blog deleted`, 5))
       } catch {
-        setErrorMessage("token expired");
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        dispatch(setErrornotification(`token expired`, 5))
       }
     }
   };
@@ -66,10 +58,7 @@ const App = () => {
       const newBlogs = blogs.map((blog) => (blog.id !== id ? blog : response));
       setBlogs(newBlogs.sort((a, b) => b.likes - a.likes));
     } catch {
-      setErrorMessage("Already removed from server");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(setErrornotification(`Already removed from the server`, 5))
     }
   };
 
@@ -129,22 +118,16 @@ const App = () => {
       setUser(user);
       setUsername("");
       setPassword("");
-      setSuccessMessage("Login successful");
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
+      dispatch(setSuccessnotification(`Login successful`, 5))
     } catch {
-      setErrorMessage("wrong credentials");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(setErrornotification(`wrong credentials`, 5))
     }
   };
 
   return (
     <div>
-      <ErrorNotification message={errorMessage} />
-      <SuccessNotification message={successMessage} />
+      <ErrorNotification />
+      <SuccessNotification />
       {!user && loginForm()}
       {user && (
         <div>

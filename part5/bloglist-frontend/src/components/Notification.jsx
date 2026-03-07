@@ -1,15 +1,25 @@
-export const SuccessNotification = ({ message }) => {
-  if (message === null) {
-    return null;
+import { useSelector } from 'react-redux'
+
+export const SuccessNotification = () => {
+  const notification = useSelector(({ successnotification }) => {
+    return successnotification
+  })
+
+  if (!notification) {
+    return null
   }
 
-  return <div className="success">{message}</div>;
+  return <div className="success">{notification}</div>;
 };
+ 
+export const ErrorNotification = () => {
+  const notification = useSelector(({ errornotification }) => {
+    return errornotification
+  })
 
-export const ErrorNotification = ({ message }) => {
-  if (message === null) {
-    return null;
+  if (!notification) {
+    return null
   }
 
-  return <div className="error">{message}</div>;
+  return <div className="error">{notification}</div>;
 };
