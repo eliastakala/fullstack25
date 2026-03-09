@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { appendBlog } from "../reducers/blogReducer";
 
 const BlogForm = ({ createBlog }) => {
 
@@ -13,6 +15,7 @@ const BlogForm = ({ createBlog }) => {
       author: newAuthor,
       url: newUrl,
     });
+    
     setNewTitle("");
     setNewAuthor("");
     setNewUrl("");
