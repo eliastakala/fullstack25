@@ -7,7 +7,6 @@ const loginSlice = createSlice({
   initialState: null,
   reducers: {
     setUser(state, action) {
-      console.log("toimiiks tää ", action.payload);
       return action.payload;
     },
   },

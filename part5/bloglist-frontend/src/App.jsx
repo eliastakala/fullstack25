@@ -1,36 +1,37 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer, useContext } from "react";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
-import {
-  SuccessNotification,
-  ErrorNotification,
-} from "./components/Notification";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
-import { setSuccessnotification } from './reducers/successnotificationReducer'
-import { setErrornotification } from './reducers/errornotificationReducer'
 import "./index.css";
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
 import { initializeBlogs, appendBlog } from "./reducers/blogReducer";
 import BlogList from "./components/Bloglist";
 import { addUser, signIn, signOut } from "./reducers/userReducer";
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import NotificationContext from "./NotificationContext";
 
 const App = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const user = useSelector(state => {
-    return state.user
-  })
-  
+  const user = useSelector((state) => {
+    return state.user;
+  });
+
+  // const queryClient = useQueryClient()
+  const { showNotification } = useContext(NotificationContext)
+
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // const [user, setUser] = useState(null);
 
   const addBlog = async (blogObject) => {
     try {
-      dispatch(appendBlog(blogObject))
-      dispatch(setSuccessnotification(`You created something ${blogObject.title}`, 5))
+      showNotification({ type: 'ADD', message: `You just created ${blogObject.title}`, messageType: 'success'}),
+      dispatch(appendBlog(blogObject));
     } catch {
-      dispatch(setErrornotification(`token expired`, 5))
+      showNotification({ type: 'ADD', message: `Token expired`, messageType: 'error'})
     }
   };
 
@@ -62,46 +63,40 @@ const App = () => {
   );
 
   useEffect(() => {
-    dispatch(initializeBlogs())
+    dispatch(initializeBlogs());
   }, [dispatch]);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON && loggedUserJSON !== "null") {
-      console.log('loggedUserJSON', loggedUserJSON)
       const user = JSON.parse(loggedUserJSON);
-      dispatch(addUser(user))
-      blogService.setToken(user.token)
+      dispatch(addUser(user));
+      blogService.setToken(user.token);
     }
   }, []);
 
   const handleLogout = () => {
-    dispatch(signOut())
+    dispatch(signOut());
     window.localStorage.removeItem("loggedBlogappUser");
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const result = await dispatch(signIn({ username, password }))
-    console.log('dispatch result:', result)
-    console.log('type:', typeof result)
     try {
-      const user = await dispatch(signIn({ username, password }))
+      const user = await dispatch(signIn({ username, password }));
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       blogService.setToken(user.token);
       setUsername("");
       setPassword("");
-      dispatch(setSuccessnotification(`Login successful`, 5))
-      console.log('user', user)
+      showNotification({ type: 'ADD', message: `Login successful`, messageType: 'success'})
     } catch {
-      dispatch(setErrornotification(`wrong credentials`, 5))
+      showNotification({ type: 'ADD', message: `Wrong credentials`, messageType: 'error'})
     }
   };
 
   return (
     <div>
-      <ErrorNotification />
-      <SuccessNotification />
+      <Notification />
       {!user && loginForm()}
       {user && (
         <div>

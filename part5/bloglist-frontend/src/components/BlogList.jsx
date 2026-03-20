@@ -1,22 +1,28 @@
 import { useSelector, useDispatch } from "react-redux";
 import { voteForBlog, removeBlog } from "../reducers/blogReducer";
-import { setErrornotification } from "../reducers/errornotificationReducer";
-import { setSuccessnotification } from "../reducers/successnotificationReducer";
-
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useContext } from "react";
 import Blog from "./Blog";
+import NotificationContext from "../NotificationContext";
 
 const BlogList = ({ user }) => {
+  const queryClient = useQueryClient()
+  const { showNotification } = useContext(NotificationContext)
+
   const dispatch = useDispatch();
   const blogs = useSelector((state) => {
     return state.blogs;
   });
 
   const like = ({ id }) => {
-    dispatch(voteForBlog(id));
+    try {
+      dispatch(voteForBlog(id));
+    } catch {
+      showNotification({ type: 'ADD', message: `blog already deleted`, messageType: 'error'})
+    }
   };
 
   const deleteBlog = ({ id }) => {
-    console.log('id poistamassa', id)
     const blogToDelete = blogs.find((n) => n.id === id)
     if (
       window.confirm(
@@ -25,9 +31,9 @@ const BlogList = ({ user }) => {
     ) {
       try {
         dispatch(removeBlog(id));
-        dispatch(setSuccessnotification(`Blog deleted`, 5));
+        showNotification({ type: 'ADD', message: `Blog deleted`, messageType: 'success'})
       } catch {
-        dispatch(setErrornotification(`token expired`, 5));
+        showNotification({ type: 'ADD', message: `Token expired`, messageType: 'error'})
       }
     }
   };

@@ -6,7 +6,6 @@ const blogSlice = createSlice({
   initialState: [],
   reducers: {
     createBlog(state, action) {
-      console.log("toimiiks tää ");
       state.push(action.payload)
     },
 
@@ -17,7 +16,6 @@ const blogSlice = createSlice({
         ...blogToChange,
         likes: blogToChange.likes + 1,
       };
-      console.log("entäs params", changedBlog);
       return state
         .map((blog) => (blog.id !== id ? blog : changedBlog))
         .sort((a, b) => b.likes - a.likes);
