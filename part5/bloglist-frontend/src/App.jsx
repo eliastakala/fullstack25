@@ -10,6 +10,7 @@ import BlogList from "./components/Bloglist";
 import { addUser, signIn, signOut } from "./reducers/userReducer";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import NotificationContext from "./NotificationContext";
+import { setToken } from './requests'
 
 const App = () => {
   const dispatch = useDispatch();
@@ -71,7 +72,9 @@ const App = () => {
     if (loggedUserJSON && loggedUserJSON !== "null") {
       const user = JSON.parse(loggedUserJSON);
       dispatch(addUser(user));
-      blogService.setToken(user.token);
+      console.log('user', user)
+      setToken(user.token);
+      console.log('user token', user.token)
     }
   }, []);
 
@@ -85,7 +88,7 @@ const App = () => {
     try {
       const user = await dispatch(signIn({ username, password }));
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
-      blogService.setToken(user.token);
+      setToken(user.token);
       setUsername("");
       setPassword("");
       showNotification({ type: 'ADD', message: `Login successful`, messageType: 'success'})

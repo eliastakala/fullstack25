@@ -49,6 +49,7 @@ blogsRouter.post("/", async (request, response, next) => {
 
 blogsRouter.delete("/:id", async (request, response, next) => {
   try {
+    console.log('toimiikos vieläkään')
     const user = request.user;
     const id = request.params.id;
     const blogToDelete = await Blog.findById(id);
@@ -65,6 +66,7 @@ blogsRouter.delete("/:id", async (request, response, next) => {
 });
 
 blogsRouter.put("/:id", async (request, response, next) => {
+  console.log('toimsjsdfljs')
   const { title, author, url, likes } = request.body;
   const blog = await Blog.findById(request.params.id);
 
