@@ -4,20 +4,12 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
 import Blog from "./Blog";
 import NotificationContext from "../NotificationContext";
-import { getBlogs, updateBlog, createBlog, removeBlog } from "../requests";
+import { getBlogs, updateBlog, removeBlog } from "../requests";
 
 const BlogList = ({ user }) => {
   const queryClient = useQueryClient();
   const { showNotification } = useContext(NotificationContext);
-
   // const dispatch = useDispatch();
-
-  const newBlogMutation = useMutation({
-    mutationFn: createBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
-    },
-  });
 
   const updateBlogMutation = useMutation({
     mutationFn: updateBlog,

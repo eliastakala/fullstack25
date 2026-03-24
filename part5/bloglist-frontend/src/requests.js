@@ -1,68 +1,68 @@
-const baseUrl = '/api/blogs'
+const baseUrl = "/api/blogs";
 
-let token = null
+let token = null;
 
 export const setToken = (newToken) => {
-  console.log('new token', newToken)
-  token = `Bearer ${newToken}`
-}
+  token = `Bearer ${newToken}`;
+};
 
 export const getBlogs = async () => {
-  const response = await fetch(baseUrl)
+  const response = await fetch(baseUrl);
   if (!response.ok) {
-    throw new Error('Failed to fetch notes')
+    throw new Error("Failed to fetch notes");
   }
-  return await response.json()
-}
-
+  return await response.json();
+};
 
 export const createBlog = async (newBlog) => {
   const options = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newBlog)
-  }
- 
-  const response = await fetch(baseUrl, options)
- 
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify(newBlog),
+  };
+
+  const response = await fetch(baseUrl, options);
+
   if (!response.ok) {
-    throw new Error('Failed to create blog')
+    throw new Error("Failed to create blog");
   }
- 
-  return await response.json()
-}
+
+  return await response.json();
+};
 
 export const removeBlog = async (id) => {
-  const url = `${baseUrl}/${id}`
-  console.log('urli', token)
+  const url = `${baseUrl}/${id}`;
   const options = {
-    method: 'DELETE',
-    headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': token
-     },
-  }
-  const response = await fetch(url, options)
- 
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+  };
+  const response = await fetch(url, options);
+
   if (!response.ok) {
-    throw new Error('Failed to delete blog')
+    throw new Error("Failed to delete blog");
   }
- 
-  return response.status
-}
+
+  return response.status;
+};
 
 export const updateBlog = async (updatedBlog) => {
   const options = {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updatedBlog)
-  }
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatedBlog),
+  };
 
-  const response = await fetch(`${baseUrl}/${updatedBlog.id}`, options)
+  const response = await fetch(`${baseUrl}/${updatedBlog.id}`, options);
 
   if (!response.ok) {
-    throw new Error('Failed to update blog')
+    throw new Error("Failed to update blog");
   }
 
-  return await response.json()
-}
+  return await response.json();
+};

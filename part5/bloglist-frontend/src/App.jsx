@@ -1,38 +1,45 @@
-import { useState, useEffect, useReducer, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
-import blogService from "./services/blogs";
 import "./index.css";
-import { useDispatch, useSelector } from "react-redux";
-import { initializeBlogs, appendBlog } from "./reducers/blogReducer";
 import BlogList from "./components/Bloglist";
-import { addUser, signIn, signOut } from "./reducers/userReducer";
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import NotificationContext from "./NotificationContext";
-import { setToken } from './requests'
+import { createBlog } from "./requests";
+import { setToken } from "./requests";
+import UserContext from "./UserContext";
+import loginService from "./services/login";
 
 const App = () => {
-  const dispatch = useDispatch();
-
-  const user = useSelector((state) => {
-    return state.user;
-  });
-
-  // const queryClient = useQueryClient()
-  const { showNotification } = useContext(NotificationContext)
-
+  const queryClient = useQueryClient();
+  const { showNotification } = useContext(NotificationContext);
+  const { state, userDispatch } = useContext(UserContext);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const [user, setUser] = useState(null);
+
+  const newBlogMutation = useMutation({
+    mutationFn: createBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
 
   const addBlog = async (blogObject) => {
     try {
-      showNotification({ type: 'ADD', message: `You just created ${blogObject.title}`, messageType: 'success'}),
-      dispatch(appendBlog(blogObject));
+      showNotification({
+        type: "ADD",
+        message: `You just created ${blogObject.title}`,
+        messageType: "success",
+      });
+      newBlogMutation.mutate(blogObject);
     } catch {
-      showNotification({ type: 'ADD', message: `Token expired`, messageType: 'error'})
+      showNotification({
+        type: "ADD",
+        message: `Token expired`,
+        messageType: "error",
+      });
     }
   };
 
@@ -64,50 +71,54 @@ const App = () => {
   );
 
   useEffect(() => {
-    dispatch(initializeBlogs());
-  }, [dispatch]);
-
-  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
     if (loggedUserJSON && loggedUserJSON !== "null") {
       const user = JSON.parse(loggedUserJSON);
-      dispatch(addUser(user));
-      console.log('user', user)
+      userDispatch({ type: "LOGIN", payload: user });
       setToken(user.token);
-      console.log('user token', user.token)
     }
   }, []);
 
   const handleLogout = () => {
-    dispatch(signOut());
+    userDispatch({ type: "LOGOUT" });
     window.localStorage.removeItem("loggedBlogappUser");
   };
 
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const user = await dispatch(signIn({ username, password }));
+      const user = await loginService.login({ username, password });
+      userDispatch({ type: "LOGIN", payload: user });
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(user));
       setToken(user.token);
       setUsername("");
       setPassword("");
-      showNotification({ type: 'ADD', message: `Login successful`, messageType: 'success'})
+      showNotification({
+        type: "ADD",
+        message: `Login successful`,
+        messageType: "success",
+      });
     } catch {
-      showNotification({ type: 'ADD', message: `Wrong credentials`, messageType: 'error'})
+      showNotification({
+        type: "ADD",
+        message: `Wrong credentials`,
+        messageType: "error",
+      });
     }
   };
 
   return (
     <div>
       <Notification />
-      {!user && loginForm()}
-      {user && (
+      {!state.user && loginForm()}
+      {state.user && (
         <div>
           <h2>blogs</h2>
           <p>
-            {user.name} logged in <button onClick={handleLogout}>Logout</button>
+            {state.user.name} logged in{" "}
+            <button onClick={handleLogout}>Logout</button>
           </p>
-          <BlogList user={user} />
+          <BlogList user={state.user} />
           <Togglable buttonLabel="new blog">
             <BlogForm createBlog={addBlog} />
           </Togglable>
