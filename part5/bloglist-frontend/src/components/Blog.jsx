@@ -1,9 +1,11 @@
 import { useState } from "react";
+import UserContext from "../UserContext;"
 
-const Blog = ({ blog, like, deleteBlog, user }) => {
+const Blog = ({ blog, like, deleteBlog }) => {
   const [visible, setVisible] = useState(false);
+  const { state, userDispatch } = useContext(UserContext);
 
-  const deleteVisible = { display: user.id === blog.user.id ? "" : "none" };
+  const deleteVisible = { display: state.user.id === blog.user.id ? "" : "none" };
 
   const blogStyle = {
     paddingTop: 10,

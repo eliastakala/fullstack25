@@ -6,6 +6,7 @@ import Blog from "./Blog";
 import NotificationContext from "../NotificationContext";
 import { getBlogs, updateBlog, removeBlog } from "../requests";
 
+
 const BlogList = ({ user }) => {
   const queryClient = useQueryClient();
   const { showNotification } = useContext(NotificationContext);
