@@ -4,12 +4,18 @@ import Togglable from "./components/Togglable";
 import Notification from "./components/Notification";
 import "./index.css";
 import BlogList from "./components/Bloglist";
+import Users from "./components/Users";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import NotificationContext from "./NotificationContext";
 import { createBlog } from "./requests";
 import { setToken } from "./requests";
 import UserContext from "./UserContext";
 import loginService from "./services/login";
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
+import User from "./components/User";
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -107,24 +113,46 @@ const App = () => {
     }
   };
 
+  const padding = {
+    padding: 5
+  }
+
   return (
-    <div>
+    <Router>
+      <div>
+        <Link style={padding} to="/">home</Link>
+        <Link style={padding} to="/users">users</Link>
+      </div>
       <Notification />
-      {!state.user && loginForm()}
-      {state.user && (
-        <div>
-          <h2>blogs</h2>
-          <p>
-            {state.user.name} logged in{" "}
-            <button onClick={handleLogout}>Logout</button>
-          </p>
-          <BlogList user={state.user} />
-          <Togglable buttonLabel="new blog">
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
-        </div>
-      )}
-    </div>
+      <div>
+        {state.user && (
+          <div>
+            <h2>blogs</h2>
+            <p>
+              {state.user.name} logged in{" "}
+              <button onClick={handleLogout}>Logout</button>
+            </p>
+          </div>
+        )}
+      </div>
+      <Routes>
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<User />} />
+        <Route path="/" element={
+          <div>
+            {!state.user && loginForm()}
+            {state.user && (
+              <div>
+                <BlogList user={state.user} />
+                <Togglable buttonLabel="new blog">
+                  <BlogForm createBlog={addBlog} />
+                </Togglable>
+              </div>
+            )}
+          </div>
+        }/>
+      </Routes>
+    </Router>
   );
 };
 

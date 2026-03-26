@@ -1,4 +1,5 @@
 const baseUrl = "/api/blogs";
+const userUrl = "/api/users";
 
 let token = null;
 
@@ -6,10 +7,18 @@ export const setToken = (newToken) => {
   token = `Bearer ${newToken}`;
 };
 
+export const getUsers = async () => {
+  const response = await fetch(userUrl);
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+  return await response.json();
+};
+
 export const getBlogs = async () => {
   const response = await fetch(baseUrl);
   if (!response.ok) {
-    throw new Error("Failed to fetch notes");
+    throw new Error("Failed to fetch blogs");
   }
   return await response.json();
 };

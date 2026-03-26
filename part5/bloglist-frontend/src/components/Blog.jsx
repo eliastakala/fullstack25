@@ -1,5 +1,5 @@
-import { useState } from "react";
-import UserContext from "../UserContext;"
+import { useState, useContext } from "react";
+import UserContext from "../UserContext";
 
 const Blog = ({ blog, like, deleteBlog }) => {
   const [visible, setVisible] = useState(false);
