@@ -16,6 +16,7 @@ import {
   Routes, Route, Link
 } from 'react-router-dom'
 import User from "./components/User";
+import Blog from "./components/Blog";
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -117,6 +118,8 @@ const App = () => {
     padding: 5
   }
 
+
+
   return (
     <Router>
       <div>
@@ -138,6 +141,7 @@ const App = () => {
       <Routes>
         <Route path="/users" element={<Users />} />
         <Route path="/users/:id" element={<User />} />
+        <Route path="/blogs/:id" element={<Blog />} />
         <Route path="/" element={
           <div>
             {!state.user && loginForm()}

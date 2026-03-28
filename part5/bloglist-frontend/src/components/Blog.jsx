@@ -1,19 +1,71 @@
 import { useState, useContext } from "react";
 import UserContext from "../UserContext";
+import { useParams } from "react-router-dom";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { getBlogs, updateBlog, removeBlog } from "../requests";
+import NotificationContext from "../NotificationContext";
 
-const Blog = ({ blog, like, deleteBlog }) => {
+const Blog = () => {
   const [visible, setVisible] = useState(false);
   const { state, userDispatch } = useContext(UserContext);
+  const { showNotification } = useContext(NotificationContext);
+  const queryClient = useQueryClient();
 
-  const deleteVisible = { display: state.user.id === blog.user.id ? "" : "none" };
+  const { id } = useParams();
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
+  const updateBlogMutation = useMutation({
+    mutationFn: updateBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: removeBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
+
+  const like = ({ blog }) => {
+    console.log("henlo", blog);
+    try {
+      updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
+    } catch {
+      showNotification({
+        type: "ADD",
+        message: `blog already deleted`,
+        messageType: "error",
+      });
+    }
   };
+
+  const deleteBlog = ({ id }) => {
+    const blogToDelete = blogs.find((n) => n.id === id);
+    if (
+      window.confirm(
+        `Remove blog ${blogToDelete.title} by ${blogToDelete.author}`,
+      )
+    ) {
+      try {
+        deleteBlogMutation.mutate(id);
+        showNotification({
+          type: "ADD",
+          message: `Blog deleted`,
+          messageType: "success",
+        });
+      } catch {
+        showNotification({
+          type: "ADD",
+          message: `Token expired`,
+          messageType: "error",
+        });
+      }
+    }
+  };
+
+  
 
   const buttonText = visible ? "hide" : "show details";
 
@@ -21,26 +73,36 @@ const Blog = ({ blog, like, deleteBlog }) => {
     setVisible(!visible);
   };
 
+  const { data: blogs, isLoading } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: getBlogs,
+  });
+
+  if (isLoading) return <div>loading...</div>;
+
+  const blog = blogs.find((b) => b.id === id);
+  if (!blog) return null;
+
+  const deleteVisible = {
+    display: state.user.id === blog.user.id ? "" : "none",
+  };
+
   return (
-    <div style={blogStyle} className="blog">
-      <div className="title-author">
-        {blog.title} {blog.author}{" "}
-        <button onClick={details}>{buttonText}</button>
+    <div className="blog">
+      <h1>
+        {blog.title}
+        {blog.author}
+      </h1>
+      <Link>{blog.url}</Link>
+      <div>
+        {blog.likes} likes{" "}
+        <button onClick={() => like({ blog: blog })}>like</button>
       </div>
-      {visible && (
-        <div className="metaContent">
-          <div className="url"> {blog.url} </div>
-          <div className="likes">
-            {" "}
-            {blog.likes} <button onClick={like}>like</button>
-          </div>
-          <div className="username"> {blog.user.name} </div>
-          <div style={deleteVisible} className="deleteButton">
-            {" "}
-            <button onClick={deleteBlog}>delete</button>
-          </div>
-        </div>
-      )}
+      <div>added by {blog.user.name}</div>
+      <div style={deleteVisible} className="deleteButton">
+        {" "}
+        <button onClick={() => deleteBlog({ id: blog.id })}>delete</button>
+      </div>
     </div>
   );
 };

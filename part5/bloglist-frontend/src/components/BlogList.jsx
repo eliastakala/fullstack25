@@ -5,64 +5,21 @@ import { useContext } from "react";
 import Blog from "./Blog";
 import NotificationContext from "../NotificationContext";
 import { getBlogs, updateBlog, removeBlog } from "../requests";
-
+import { Link } from 'react-router-dom'
 
 const BlogList = ({ user }) => {
   const queryClient = useQueryClient();
   const { showNotification } = useContext(NotificationContext);
-  // const dispatch = useDispatch();
 
-  const updateBlogMutation = useMutation({
-    mutationFn: updateBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
-    },
-  });
 
-  const deleteBlogMutation = useMutation({
-    mutationFn: removeBlog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blogs"] });
-    },
-  });
-
-  const like = ({ blog }) => {
-    try {
-      updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
-    } catch {
-      showNotification({
-        type: "ADD",
-        message: `blog already deleted`,
-        messageType: "error",
-      });
-    }
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: "solid",
+    borderWidth: 1,
+    marginBottom: 5,
   };
-
-  const deleteBlog = ({ id }) => {
-    const blogToDelete = blogs.find((n) => n.id === id);
-    if (
-      window.confirm(
-        `Remove blog ${blogToDelete.title} by ${blogToDelete.author}`,
-      )
-    ) {
-      try {
-        deleteBlogMutation.mutate(id);
-        // dispatch(removeBlog(id));
-        showNotification({
-          type: "ADD",
-          message: `Blog deleted`,
-          messageType: "success",
-        });
-      } catch {
-        showNotification({
-          type: "ADD",
-          message: `Token expired`,
-          messageType: "error",
-        });
-      }
-    }
-  };
-
+  
   const result = useQuery({
     queryKey: ["blogs"],
     queryFn: getBlogs,
@@ -76,14 +33,9 @@ const BlogList = ({ user }) => {
   return (
     <div>
       {blogs.map((blog) => (
-        <div key={blog.id}>
+        <div style={blogStyle} key={blog.id}>
           <div>
-            <Blog
-              blog={blog}
-              like={() => like({ blog: blog })}
-              deleteBlog={() => deleteBlog({ id: blog.id })}
-              user={user}
-            />
+            <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
           </div>
         </div>
       ))}
