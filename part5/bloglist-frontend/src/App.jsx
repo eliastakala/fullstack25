@@ -118,23 +118,31 @@ const App = () => {
     padding: 5
   }
 
+  const blogStyle = {
+    paddingTop: 5,
+    paddingLeft: 2,
+    paddingBottom: 5,
+    marginBottom: 5,
+    backgroundColor: "#CD5C5C",
+  };
+
 
 
   return (
     <Router>
-      <div>
+      <div style={blogStyle}>
         <Link style={padding} to="/">home</Link>
         <Link style={padding} to="/users">users</Link>
+        {state.user
+          ? <em>{state.user.name} logged in <button onClick={handleLogout}>Logout</button> </em> 
+          : <Link style={padding} to="/">login</Link>
+          }
       </div>
       <Notification />
       <div>
         {state.user && (
           <div>
             <h2>blogs</h2>
-            <p>
-              {state.user.name} logged in{" "}
-              <button onClick={handleLogout}>Logout</button>
-            </p>
           </div>
         )}
       </div>

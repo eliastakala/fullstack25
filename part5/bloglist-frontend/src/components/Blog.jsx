@@ -65,8 +65,6 @@ const Blog = () => {
     }
   };
 
-  
-
   const buttonText = visible ? "hide" : "show details";
 
   const details = () => {
@@ -82,7 +80,7 @@ const Blog = () => {
 
   const blog = blogs.find((b) => b.id === id);
   if (!blog) return null;
-
+  console.log("mikäs tää on", blog);
   const deleteVisible = {
     display: state.user.id === blog.user.id ? "" : "none",
   };
@@ -103,6 +101,12 @@ const Blog = () => {
         {" "}
         <button onClick={() => deleteBlog({ id: blog.id })}>delete</button>
       </div>
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment) => (
+          <li key={comment.id}>{comment.content}</li>
+        ))}
+      </ul>
     </div>
   );
 };
