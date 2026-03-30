@@ -3,11 +3,12 @@ import UserContext from "../UserContext";
 import { useParams } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { getBlogs, updateBlog, removeBlog } from "../requests";
+import { getBlogs, updateBlog, removeBlog, commentBlog } from "../requests";
 import NotificationContext from "../NotificationContext";
 
 const Blog = () => {
   const [visible, setVisible] = useState(false);
+  const [newComment, setNewComment] = useState("");
   const { state, userDispatch } = useContext(UserContext);
   const { showNotification } = useContext(NotificationContext);
   const queryClient = useQueryClient();
@@ -28,8 +29,27 @@ const Blog = () => {
     },
   });
 
+  const newCommentMutation = useMutation({
+    mutationFn: commentBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+    },
+  });
+
+  const addComment = ({id, comment}) => {
+    try {
+      newCommentMutation.mutate({id, comment});
+      setNewComment("")
+    } catch {
+      showNotification({
+        type: "ADD",
+        message: `Token expired`,
+        messageType: "error",
+      });
+    }
+  };
+
   const like = ({ blog }) => {
-    console.log("henlo", blog);
     try {
       updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 });
     } catch {
@@ -107,6 +127,18 @@ const Blog = () => {
           <li key={comment.id}>{comment.content}</li>
         ))}
       </ul>
+      <form onSubmit={() => addComment({ id: blog.id, comment: newComment })}>
+      <div>
+        <label>
+          title:
+          <input
+            value={newComment}
+            onChange={(event) => setNewComment(event.target.value)}
+          />
+        </label>
+      </div>
+      <button type="submit">comment</button>
+    </form>
     </div>
   );
 };

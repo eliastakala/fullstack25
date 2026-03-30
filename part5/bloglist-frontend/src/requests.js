@@ -75,3 +75,19 @@ export const updateBlog = async (updatedBlog) => {
 
   return await response.json();
 };
+
+export const commentBlog = async ({id, comment}) => {
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({content: comment}),
+  };
+
+  const response = await fetch(`${baseUrl}/${id}/comments`, options);
+
+  if (!response.ok) {
+    throw new Error("Failed to comment a blog");
+  }
+
+  return await response.json();
+};
