@@ -5,12 +5,20 @@ import { useContext } from "react";
 import Blog from "./Blog";
 import NotificationContext from "../NotificationContext";
 import { getBlogs, updateBlog, removeBlog } from "../requests";
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
 const BlogList = ({ user }) => {
   const queryClient = useQueryClient();
   const { showNotification } = useContext(NotificationContext);
-
 
   const blogStyle = {
     paddingTop: 10,
@@ -19,7 +27,7 @@ const BlogList = ({ user }) => {
     borderWidth: 1,
     marginBottom: 5,
   };
-  
+
   const result = useQuery({
     queryKey: ["blogs"],
     queryFn: getBlogs,
@@ -31,15 +39,21 @@ const BlogList = ({ user }) => {
   const blogs = result.data.sort((a, b) => b.likes - a.likes);
 
   return (
-    <div>
-      {blogs.map((blog) => (
-        <div style={blogStyle} key={blog.id}>
-          <div>
-            <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
-          </div>
-        </div>
-      ))}
-    </div>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableBody>
+          {blogs.map((blog) => (
+            <TableRow key={blog.id}>
+              <TableCell>
+                <Link to={`/blogs/${blog.id}`}>
+                  {blog.title} {blog.author}
+                </Link>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

@@ -11,12 +11,10 @@ import { createBlog } from "./requests";
 import { setToken } from "./requests";
 import UserContext from "./UserContext";
 import loginService from "./services/login";
-import {
-  BrowserRouter as Router,
-  Routes, Route, Link
-} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import User from "./components/User";
 import Blog from "./components/Blog";
+import { Container } from "@mui/material";
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -115,56 +113,69 @@ const App = () => {
   };
 
   const padding = {
-    padding: 5
-  }
+    padding: 5,
+  };
 
   const blogStyle = {
     paddingTop: 5,
     paddingLeft: 2,
     paddingBottom: 5,
     marginBottom: 5,
-    backgroundColor: "#CD5C5C",
+    backgroundColor: "#d7c4a8ff",
   };
 
-
-
   return (
-    <Router>
-      <div style={blogStyle}>
-        <Link style={padding} to="/">home</Link>
-        <Link style={padding} to="/users">users</Link>
-        {state.user
-          ? <em>{state.user.name} logged in <button onClick={handleLogout}>Logout</button> </em> 
-          : <Link style={padding} to="/">login</Link>
-          }
-      </div>
-      <Notification />
-      <div>
-        {state.user && (
-          <div>
-            <h2>blogs</h2>
-          </div>
-        )}
-      </div>
-      <Routes>
-        <Route path="/users" element={<Users />} />
-        <Route path="/users/:id" element={<User />} />
-        <Route path="/blogs/:id" element={<Blog />} />
-        <Route path="/" element={
-          <div>
-            {!state.user && loginForm()}
-            {state.user && (
+    <Container>
+      <Router>
+        <div style={blogStyle}>
+          <Link style={padding} to="/">
+            home
+          </Link>
+          <Link style={padding} to="/users">
+            users
+          </Link>
+          {state.user ? (
+            <em>
+              {state.user.name} logged in{" "}
+              <button onClick={handleLogout}>Logout</button>{" "}
+            </em>
+          ) : (
+            <Link style={padding} to="/">
+              login
+            </Link>
+          )}
+        </div>
+        <Notification />
+        <div>
+          {state.user && (
+            <div>
+              <h2>blogs</h2>
+            </div>
+          )}
+        </div>
+        <Routes>
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<Blog />} />
+          <Route
+            path="/"
+            element={
               <div>
-                <BlogList user={state.user} />
-                <Togglable buttonLabel="new blog">
-                  <BlogForm createBlog={addBlog} />
-                </Togglable>
+                {!state.user && loginForm()}
+                {state.user && (
+                  <div>
+                    <BlogList user={state.user} />
+                    <Togglable buttonLabel="new blog">
+                      <BlogForm createBlog={addBlog} />
+                    </Togglable>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        }/>
-      </Routes>
-    </Router>
+            }
+          />
+        </Routes>
+      </Router>
+    </Container>
   );
 };
 
